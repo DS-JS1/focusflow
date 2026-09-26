@@ -58,6 +58,7 @@ header.top.scrolled{border-bottom-color:var(--line);box-shadow:0 10px 24px -18px
 .brand i{font-style:normal;color:var(--accent)}
 .logo{margin-left:auto;flex:none;display:grid;place-items:center;height:40px;padding:0 10px;border-radius:12px;background:#fff;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
 .logo img{display:block;height:24px;width:auto;max-width:34vw;object-fit:contain}
+@media (max-width:360px){.logo{padding:0 8px;height:34px}.logo img{height:18px}.brand span{font-size:18px}}
 .pill{order:9;flex-basis:100%;justify-content:center;display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:600;white-space:nowrap}
 .pill b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
 .pd{width:8px;height:8px;border-radius:50%;background:var(--muted)}
@@ -240,7 +241,8 @@ input::placeholder{color:var(--muted);opacity:.8}
 .tag.manual{background:var(--card2);color:var(--ink)}
 
 /* settings */
-.setrow{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.setrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;min-height:44px}
+.setrow > span{flex:1 1 150px}
 .setrow > span{font-weight:600;font-size:14px}
 .setrow select{width:auto;min-width:110px}
 .switch{position:relative;width:52px;height:30px;flex:none}
@@ -289,6 +291,10 @@ input::placeholder{color:var(--muted);opacity:.8}
 .updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:35;width:min(440px,calc(100% - 32px));display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--sheet);border:1px solid var(--accent);font-size:13px;font-weight:600;box-shadow:0 16px 40px -18px rgba(0,0,0,.7)}
 .updbar span{flex:1}
 .updbar button{flex:none;padding:8px 12px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:800}
+.hint{font-size:12px;color:var(--muted);text-align:center;font-weight:600;margin-top:-4px}
+.howto{border-top:1px solid var(--line);padding-top:10px}
+.howto summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--accent);list-style-position:inside}
+.howto ol{margin:10px 0;padding-left:20px;display:flex;flex-direction:column;gap:8px;font-size:14px}
 .testbar{font-size:12px;font-weight:700;text-align:center;padding:6px;border-radius:10px;background:var(--card2);color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
@@ -398,7 +404,7 @@ function fill(t,o){return t.replace(/\{(\w+)\}/g,(_,k)=>o[k]??'')}
 /* ---------- state ---------- */
 function defaults(){return{
   v:1,entries:[],adhoc:[],recent:[],hasSample:false,
-  settings:{focusMin:25,shortMin:5,longMin:15,longEvery:4,autoBreak:true,sound:true,tone:'bowl',volume:.4,vibrate:true,repeat:2,notify:false,lockScreen:false,userName:''},
+  settings:{focusMin:25,shortMin:5,longMin:15,longEvery:4,autoBreak:true,sound:true,tone:'bowl',volume:.4,vibrate:true,repeat:2,notify:false,lockScreen:false,userName:'',pad:'off',padVol:.8,clock:false,clockName:'Focus Flow Timer'},
   task:{focus:null,tracker:null},notes:{focus:'',tracker:''},
   active:null,msg:null,cycle:{date:'',n:0},
   ui:{mode:'focus',view:'timer',range:'week',cat:null,cfrom:'',cto:'',logLimit:40}
@@ -517,9 +523,10 @@ let alertTimers=[];
 function stopAlert(){alertTimers.forEach(clearTimeout);alertTimers=[]}
 function alertEnd(kind){
   stopAlert();audioSession('playback');
+  const reps=kind==='focus'&&S.settings.clock?0:(S.settings.repeat||0);
   sound(kind);buzz();
-  for(let i=1;i<=(S.settings.repeat||0);i++)alertTimers.push(setTimeout(()=>{sound(kind);buzz()},i*9000));
-  alertTimers.push(setTimeout(()=>{if(!S.settings.lockScreen)audioSession('auto')},(S.settings.repeat||0)*9000+7000));
+  for(let i=1;i<=reps;i++)alertTimers.push(setTimeout(()=>{sound(kind);buzz()},i*9000));
+  alertTimers.push(setTimeout(()=>{if(!S.settings.lockScreen)audioSession('auto')},reps*9000+7000));
 }
 ['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(alertTimers.length)stopAlert()},{passive:true}));
 
@@ -548,15 +555,17 @@ function lockSetup(){
   return lockAudio;
 }
 function syncLock(){
-  const a=S.active,on=S.settings.lockScreen&&a;
+  const a=S.active,on=a&&(S.settings.lockScreen||padVoice);
   if(!on){
     if(lockAudio&&!lockAudio.paused)lockAudio.pause();
     if(lockMetaKey&&'mediaSession' in navigator){try{navigator.mediaSession.metadata=null;navigator.mediaSession.playbackState='none'}catch(e){}}
     lockMetaKey='';return;
   }
   const el=lockSetup();
-  if(a.runStart&&el.paused)el.play().catch(()=>{});
-  if(!a.runStart&&!el.paused)el.pause();
+  if(S.settings.lockScreen&&!padVoice){
+    if(a.runStart&&el.paused)el.play().catch(()=>{});
+    if(!a.runStart&&!el.paused)el.pause();
+  }else if(!el.paused)el.pause();
   if(!('mediaSession' in navigator))return;
   const ms=navigator.mediaSession,e=elapsed(a);
   const label=a.mode==='tracker'?'Time Tracker':a.mode==='break'?(a.kind==='long'?'Long break':'Short break'):'Focus';
@@ -588,6 +597,84 @@ function toast(text,title){
   t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),title?5200:3000);
 }
 
+/* ---------- focus sound: Deep pad ----------
+   A slowly shifting low chord, generated live. It plays only while a focus session is running
+   and fades in and out. It goes through an <audio> element so the phone treats it as media:
+   that gives the lock-screen card and keeps the app (and its alerts) running while locked. */
+let padVoice=null,padEl=null,padOut=null;
+const PAD_VOLUMES=[[.5,'Quiet'],[.8,'Medium'],[1.15,'Loud']];
+function padSetup(){
+  const c=ac();if(!c)return null;
+  if(!padOut){
+    padOut=c.createGain();padOut.gain.value=S.settings.padVol;
+    try{
+      const dest=c.createMediaStreamDestination();padOut.connect(dest);
+      padEl=new Audio();padEl.setAttribute('playsinline','');padEl.srcObject=dest.stream;
+    }catch(e){padEl=null;padOut.connect(c.destination)}
+  }
+  return c;
+}
+function padVoiceNodes(c,out,keep){
+  const osc=(f,type,cents)=>{const o=c.createOscillator();o.type=type;o.frequency.value=f;o.detune.value=cents;o.start();keep.push(o);return o};
+  const lfo=(rate,depth,param)=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=rate;g.gain.value=depth;o.connect(g).connect(param);o.start();keep.push(o)};
+  const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=650;lp.Q.value=.7;
+  const bus=c.createGain();bus.gain.value=.2;lp.connect(bus).connect(out);
+  // soft echo for space
+  const dl=c.createDelay(2),fb=c.createGain(),df=c.createBiquadFilter();dl.delayTime.value=.7;fb.gain.value=.3;df.type='lowpass';df.frequency.value=1800;
+  bus.connect(dl);dl.connect(df).connect(fb).connect(dl);fb.connect(out);
+  [73.42,110,146.83,174.61,220].forEach((f,i)=>{   // D minor: D2 A2 D3 F3 A3
+    [-4,4].forEach(cents=>{
+      const g=c.createGain();g.gain.value=.12;osc(f,i%2?'triangle':'sine',cents).connect(g).connect(lp);
+      lfo(.018+i*.011,.09,g.gain);
+    });
+  });
+  lfo(.013,230,lp.frequency);
+}
+function padStart(){
+  const c=padSetup();if(!c||padVoice)return;
+  const out=c.createGain(),t=c.currentTime;out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(1,t+3);out.connect(padOut);
+  const keep=[];padVoiceNodes(c,out,keep);padVoice={out,keep};
+  if(padEl&&padEl.paused)padEl.play().catch(()=>{
+    // media element refused: play straight to the speakers instead
+    try{padOut.disconnect()}catch(e){}padEl=null;padOut.connect(c.destination);
+  });
+}
+function padStop(secs=2.5){
+  const v=padVoice;if(!v||!AC)return;padVoice=null;
+  const t=AC.currentTime;v.out.gain.cancelScheduledValues(t);v.out.gain.setValueAtTime(v.out.gain.value,t);v.out.gain.linearRampToValueAtTime(0,t+secs);
+  setTimeout(()=>{
+    try{v.out.disconnect()}catch(e){}v.keep.forEach(n=>{try{n.stop()}catch(e){}});
+    if(!padVoice&&padEl&&!padEl.paused)padEl.pause();
+  },secs*1000+200);
+}
+let padPreviewT=null;
+function padWanted(){const a=S.active;return S.settings.pad!=='off'&&a&&a.mode==='focus'&&!!a.runStart}
+function syncPad(){
+  if(padPreviewT)return;
+  if(padWanted()&&!padVoice)padStart();else if(!padWanted()&&padVoice)padStop();
+}
+function previewPad(){
+  clearTimeout(padPreviewT);
+  if(padVoice&&!padPreviewT){toast('The Deep pad is already playing.');return}
+  padStart();toast('Playing the Deep pad for 12 seconds.');
+  padPreviewT=setTimeout(()=>{padPreviewT=null;if(!padWanted())padStop(3)},12000);
+}
+function setPadVol(v){S.settings.padVol=+v;save();if(padOut&&AC)padOut.gain.setTargetAtTime(+v,AC.currentTime,.1)}
+
+/* ---------- iPhone Clock timer pairing ----------
+   Runs a user-made Apple Shortcut that starts the Clock app's timer. The Clock timer keeps
+   Apple Music playing, shows a live countdown on the lock screen and rings when time is up. */
+function runClock(min){
+  const name=(S.settings.clockName||'').trim()||'Focus Flow Timer';
+  const url='shortcuts://run-shortcut?name='+encodeURIComponent(name)+'&input=text&text='+encodeURIComponent(String(min));
+  try{location.href=url}catch(e){}
+}
+function testClock(){
+  if(!/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)){toast('Shortcuts is on iPhone and iPad. Try this from your phone.');return}
+  runClock(1);
+}
+function breakMinLeft(){const a=S.active;return a?Math.max(1,Math.ceil((a.target-elapsed(a))/MIN)):S.settings.shortMin}
+
 /* ---------- timer actions ---------- */
 let pending=null;
 function setMode(m){S.ui.mode=m;save();render()}
@@ -614,11 +701,13 @@ function toggle(a){
   if(a.runStart){a.accum+=Date.now()-a.runStart;a.runStart=null;releaseWake()}
   else{a.runStart=Date.now();wake()}
   save();render();
+  if(S.settings.clock&&a.mode==='focus')toast(a.runStart?'Resumed. Resume the Clock timer from your lock screen too.':'Paused. Pause the Clock timer from your lock screen too.');
 }
 function startFocus(){
   const m=S.settings.focusMin,now=Date.now();
   S.active={mode:'focus',task:{...S.task.focus},min:m,target:m*MIN,accum:0,runStart:now,startedAt:now};
   S.msg=null;save();render();wake();
+  if(S.settings.clock)runClock(m);
 }
 function startTracker(){
   const now=Date.now();
@@ -639,7 +728,7 @@ function completeFocus(){
   S.msg={title:long?`${c.n} sessions done. Take ${bmin} minutes.`:`Session ${c.n} complete`,
          text:fill(pick(FOCUS_MSG),{min:a.min,task:a.task.name,n:c.n,today:fmtDur(todayFocus)})};
   S.ui.mode='focus';S.ui.view='timer';
-  save();alertEnd('focus');notify('Focus session complete',S.msg.text);render();
+  const padWas=!!padVoice;save();render();setTimeout(()=>alertEnd('focus'),padWas?2600:0);notify('Focus session complete',S.msg.text);
   if(!S.settings.autoBreak)releaseWake();
 }
 function completeBreak(){
@@ -667,7 +756,8 @@ function endFocusEarly(keep){
   const el=elapsed(a);
   if(keep&&el>=MIN){addEntry({id:uid(),mode:'focus',cat:a.task.cat,task:a.task.name,start:a.startedAt,end:Date.now(),sec:focusSecFrom(el),completed:false,note:S.notes.focus||''});S.notes.focus=''}
   S.active=null;save();releaseWake();render();
-  if(keep&&el>=MIN)toast(`Saved ${fmtDur(focusSecFrom(el))} on ${a.task.name} as a partial session.`);
+  if(keep&&el>=MIN)toast(`Saved ${fmtDur(focusSecFrom(el))} on ${a.task.name} as a partial session.${S.settings.clock?' Cancel the Clock timer from your lock screen.':''}`);
+  else if(S.settings.clock)toast('Session reset. Cancel the Clock timer from your lock screen.');
 }
 function stopTracker(silent){
   const a=S.active;if(!a||a.mode!=='tracker')return;
@@ -867,7 +957,13 @@ function vTimer(){
     minis=`<div class="mini"><b>${fmtDur(tdTask)}</b><span>Task today</span></div><div class="mini"><b>${fmtDur(onTask)}</b><span>Task all-time</span></div><div class="mini"><b>${fmtDur(sumSec(td))}</b><span>All logged today</span></div>`;
   }
 
-  return `${TEST?'<p class="testbar">Test mode: timer minutes run as seconds</p>':''}${sw}${chip}${ring}${dots}${dur}<div class="controls">${ctl}</div>${note}<div class="minis">${minis}</div>`;
+  let extra='';
+  if(vm==='focus'&&S.settings.clock){
+    if(isBreak)extra=`<button class="btn ghost block" onclick="runClock(breakMinLeft())">Time the break on iPhone Clock</button>`;
+    else if(!mine)extra=`<p class="hint">Start also sets your iPhone Clock timer for ${S.settings.focusMin} min.</p>`;
+  }
+  if(vm==='focus'&&!isBreak&&S.settings.pad!=='off')extra+=`<p class="hint">Deep pad plays during the session. Hold the sound button to change it.</p>`;
+  return `${TEST?'<p class="testbar">Test mode: timer minutes run as seconds</p>':''}${sw}${chip}${ring}${dots}${dur}<div class="controls">${ctl}</div>${extra}${note}<div class="minis">${minis}</div>`;
 }
 
 function paintTimer(){
@@ -1124,10 +1220,12 @@ function delDraft(){
 /* ---------- settings & data ---------- */
 function swRow(id,on){return `<label class="switch"><input type="checkbox" id="${id}" ${on?'checked':''} onchange="S.settings.${id}=this.checked;save()"><i></i></label>`}
 // Sound controls, shared by the Settings page and the long-press sheet on the sound button
-function soundRows(sfx=''){
+function soundRows(sfx='',withPad=true){
   const s=S.settings;
   let perm='not supported in this browser';try{if('Notification' in window)perm=Notification.permission==='granted'?'allowed':Notification.permission==='denied'?'blocked in browser settings':'not yet allowed'}catch(e){}
-  return `<div class="setrow"><span>Sound when a timer ends</span><label class="switch"><input type="checkbox" id="sound${sfx}" ${s.sound?'checked':''} onchange="S.settings.sound=this.checked;save();paintSoundBtn()"><i></i></label></div>
+  return `${withPad?`<div class="setrow"><span>Focus sound</span><select id="pad${sfx}" onchange="S.settings.pad=this.value;save();syncPad()"><option value="off" ${s.pad==='off'?'selected':''}>Off</option><option value="deep" ${s.pad==='deep'?'selected':''}>Deep pad</option></select></div>
+    <div class="setrow"><span>Focus sound volume</span><div style="display:flex;gap:8px"><select id="padVol${sfx}" onchange="setPadVol(this.value)">${PAD_VOLUMES.map(([v,l])=>`<option value="${v}" ${s.padVol===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn ghost sm" onclick="previewPad()">Preview</button></div></div>`:''}
+    <div class="setrow"><span>Sound when a timer ends</span><label class="switch"><input type="checkbox" id="sound${sfx}" ${s.sound?'checked':''} onchange="S.settings.sound=this.checked;save();paintSoundBtn()"><i></i></label></div>
     <div class="setrow"><span>Tone</span><select id="tone${sfx}" style="max-width:62%" onchange="S.settings.tone=this.value;save();sound('test',true)">${['Gentle','Standard'].map(g=>`<optgroup label="${g}">${TONES.filter(t=>t[2]===g).map(([k,l])=>`<option value="${k}" ${s.tone===k?'selected':''}>${l}</option>`).join('')}</optgroup>`).join('')}</select></div>
     <div class="setrow"><span>Volume</span><div style="display:flex;gap:8px"><select id="volume${sfx}" onchange="S.settings.volume=+this.value;save();sound('test',true)">${VOLUMES.map(([v,l])=>`<option value="${v}" ${(s.volume??.4)===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn ghost sm" onclick="sound('test',true)">Test</button></div></div>
     <div class="setrow"><span>Repeat the alert<small class="muted" style="display:block;font-weight:500">Every 9 seconds until you tap the screen</small></span><select id="repeat${sfx}" onchange="S.settings.repeat=+this.value;save()">${[[0,'No repeat'],[1,'1 repeat'],[2,'2 repeats'],[4,'4 repeats']].map(([v,l])=>`<option value="${v}" ${s.repeat===v?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -1173,8 +1271,29 @@ function vSettings(){
     <div class="setrow"><span>Long break after</span>${sel('longEvery',[2,3,4,5,6],s.longEvery,v=>v+' sessions')}</div>
     <div class="setrow"><span>Start breaks automatically</span>${swRow('autoBreak',s.autoBreak)}</div>
   </section>
+  <section class="card"><h4>Focus sound</h4>
+    <div class="setrow"><span>Play during focus sessions<small class="muted" style="display:block;font-weight:500">Fades in when you start and fades out when the session ends. Pauses Apple Music while it plays.</small></span><select id="padSel" onchange="S.settings.pad=this.value;save();syncPad()"><option value="off" ${s.pad==='off'?'selected':''}>Off</option><option value="deep" ${s.pad==='deep'?'selected':''}>Deep pad</option></select></div>
+    <div class="setrow"><span>Focus sound volume</span><div style="display:flex;gap:8px"><select id="padVol" onchange="setPadVol(this.value)">${PAD_VOLUMES.map(([v,l])=>`<option value="${v}" ${s.padVol===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn ghost sm" onclick="previewPad()">Preview</button></div></div>
+  </section>
+  <section class="card"><h4>iPhone Clock timer</h4>
+    <p class="muted" style="font-size:14px">Use this when you're listening to Apple Music. Each focus session also starts your iPhone's Clock timer. Your music keeps playing, the lock screen shows a live countdown, and the phone's own alarm rings when time is up.</p>
+    <div class="setrow"><span>Start a Clock timer with each focus session</span><label class="switch"><input type="checkbox" id="clock" ${s.clock?'checked':''} onchange="S.settings.clock=this.checked;save();render()"><i></i></label></div>
+    <label class="field">Shortcut name<input type="text" id="clockName" maxlength="60" value="${esc(s.clockName)}" oninput="S.settings.clockName=this.value;save()"></label>
+    <button class="btn ghost" onclick="testClock()">Test it with a 1-minute timer</button>
+    <details class="howto"${s.clock?'':' open'}><summary>Set up the shortcut (one time, about a minute)</summary>
+      <ol>
+        <li>Open the <b>Shortcuts</b> app and tap <b>+</b> to make a new shortcut.</li>
+        <li>Tap the name at the top, choose <b>Rename</b>, and call it <b>${esc(s.clockName||'Focus Flow Timer')}</b>. It must match the name above exactly.</li>
+        <li>Tap <b>Add Action</b>, search for <b>Get Numbers from Input</b> and add it. Tap its blue <b>Input</b> and choose <b>Shortcut Input</b>.</li>
+        <li>Search for <b>Start Timer</b> and add it underneath. Tap the number, choose <b>Numbers</b> from the variables list, and make sure the unit says <b>minutes</b>.</li>
+        <li>Tap <b>Done</b>. Back here, tap <b>Test it with a 1-minute timer</b>. The first time, your phone asks to open Shortcuts: tap <b>Open</b>, then allow it.</li>
+        <li>To get back afterwards, tap <b>◀</b> at the top left of the screen, or swipe to the app.</li>
+      </ol>
+      <p class="muted" style="font-size:13px">Choose the alarm sound in the Clock app: Timer → When Timer Ends. Pausing or resetting here doesn't pause the Clock timer; use the controls on your lock screen for that.</p>
+    </details>
+  </section>
   <section class="card"><h4>Sound &amp; alerts</h4>
-    ${soundRows()}
+    ${soundRows('',false)}
     <p class="muted" style="font-size:13px">Web apps can't raise your phone's own volume. Alerts play at your phone's media volume, so keep that turned up. Extra loud and repeats help if it's still too faint. Tip: hold the sound button on the Focus screen to open these settings.</p>
   </section>
   <section class="card"><h4>Ad-hoc tasks</h4>
@@ -1258,7 +1377,7 @@ function render(){
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.ui.view));
   const views={timer:vTimer,dash:vDash,stats:vStats,log:vLog,settings:vSettings};
   $('#main').innerHTML=(views[S.ui.view]||vTimer)();
-  paintTimer();paintPill();syncLock();
+  paintTimer();paintPill();syncPad();syncLock();
 }
 function tick(){
   const a=S.active;
