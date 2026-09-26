@@ -6,14 +6,14 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
-<meta name="apple-mobile-web-app-title" content="FocusFlow">
+<meta name="apple-mobile-web-app-title" content="Focus Flow">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
 </head>
 <body>
-<title>FocusFlow</title>
-<meta name="theme-color" content="#0B1026">
+<title>Dryspace Focus Flow</title>
+<meta name="theme-color" content="#0F1839">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,13 +62,17 @@ p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 
 .app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;padding-inline:16px}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:10px;padding-block:12px;margin-inline:-16px;padding-inline:16px;background:color-mix(in srgb,var(--hdr) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:background-color .6s,border-color .3s}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-block:12px;margin-inline:-16px;padding-inline:16px;background:color-mix(in srgb,var(--hdr) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:background-color .6s,border-color .3s}
 header.top::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:env(safe-area-inset-top,0px);background:inherit}
 header.top.scrolled{border-bottom-color:var(--line);box-shadow:0 10px 24px -18px rgba(0,0,0,.6)}
 .iconbtn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);flex:none}
-.brand{font:800 20px/1 var(--f-display);letter-spacing:-.02em;display:flex;align-items:baseline;min-width:0}
+.brand{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1}
+.brand small{font:800 10px/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.brand span{font:800 20px/1 var(--f-display);letter-spacing:-.02em;white-space:nowrap}
 .brand i{font-style:normal;color:var(--accent)}
-.pill{margin-left:auto;display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:600;white-space:nowrap}
+.logo{margin-left:auto;flex:none;display:grid;place-items:center;height:40px;padding:0 10px;border-radius:12px;background:#fff;box-shadow:0 4px 14px -6px rgba(0,0,0,.5)}
+.logo img{display:block;height:24px;width:auto;max-width:34vw;object-fit:contain}
+.pill{order:9;flex-basis:100%;justify-content:center;display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:600;white-space:nowrap}
 .pill b{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums}
 .pd{width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .pill.tracker .pd{background:var(--m-tracker)}
@@ -271,7 +275,8 @@ input::placeholder{color:var(--muted);opacity:.8}
 .grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px}
 .sheet-body{display:flex;flex-direction:column;gap:14px}
 .overlay.drawer{justify-content:flex-start;align-items:stretch}
-.overlay.drawer .sheet{max-width:300px;max-height:none;height:100%;border-radius:0 26px 26px 0;border:1px solid var(--line);border-left:0;transform:translateX(-40px);padding-top:calc(18px + env(safe-area-inset-top,0px))}
+.overlay.drawer .sheet{max-width:300px;max-height:none;height:100%;border-radius:0 26px 26px 0;border:1px solid var(--line);border-left:0;transform:translateX(-40px);padding-top:calc(18px + env(safe-area-inset-top,0px));padding-left:calc(18px + env(safe-area-inset-left,0px));width:min(300px,86vw)}
+.overlay.drawer.open .sheet{transform:none}
 .overlay.drawer .grab{display:none}
 .navlist{display:flex;flex-direction:column;gap:4px}
 .navlist button{display:flex;align-items:center;gap:14px;padding:12px;border-radius:14px;font-weight:700;font-size:16px;text-align:left}
@@ -295,6 +300,9 @@ input::placeholder{color:var(--muted);opacity:.8}
 .toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));z-index:40;transform:translate(-50%,20px);width:min(440px,calc(100% - 32px));padding:14px 16px;border-radius:18px;background:var(--sheet);border:1px solid var(--line);box-shadow:0 20px 50px -20px rgba(0,0,0,.6);font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast .tt{font:700 17px/1.3 var(--f-display);margin-top:2px}
+.updbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:35;width:min(440px,calc(100% - 32px));display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--sheet);border:1px solid var(--accent);font-size:13px;font-weight:600;box-shadow:0 16px 40px -18px rgba(0,0,0,.7)}
+.updbar span{flex:1}
+.updbar button{flex:none;padding:8px 12px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:800}
 .testbar{font-size:12px;font-weight:700;text-align:center;padding:6px;border-radius:10px;background:var(--card2);color:var(--accent)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
@@ -306,7 +314,8 @@ input::placeholder{color:var(--muted);opacity:.8}
     <button class="iconbtn" id="burger" aria-label="Open menu" onclick="openDrawer()">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h11M4 17h16"/></svg>
     </button>
-    <div class="brand">Focus<i>Flow</i></div>
+    <div class="brand"><small>Dryspace</small><span>Focus<i>Flow</i></span></div>
+    <div class="logo"><img src="logo.png" alt="Dryspace Solutions"></div>
     <button class="pill" id="pill" hidden onclick="goActive()"></button>
   </header>
   <main id="main"></main>
@@ -318,6 +327,7 @@ input::placeholder{color:var(--muted);opacity:.8}
   <button data-v="log" onclick="go('log')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Log</button>
 </div></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="updbar" id="update" role="status" hidden></div>
 
 <script>
 /* ---------- constants ---------- */
@@ -402,7 +412,7 @@ function fill(t,o){return t.replace(/\{(\w+)\}/g,(_,k)=>o[k]??'')}
 /* ---------- state ---------- */
 function defaults(){return{
   v:1,entries:[],adhoc:[],recent:[],hasSample:false,
-  settings:{focusMin:25,shortMin:5,longMin:15,longEvery:4,autoBreak:true,sound:true,tone:'bowl',volume:.4,vibrate:true},
+  settings:{focusMin:25,shortMin:5,longMin:15,longEvery:4,autoBreak:true,sound:true,tone:'bowl',volume:.4,vibrate:true,repeat:2,notify:false,lockScreen:false,userName:''},
   task:{focus:null,tracker:null},notes:{focus:'',tracker:''},
   active:null,msg:null,cycle:{date:'',n:0},
   ui:{mode:'focus',view:'timer',range:'week',cat:null,cfrom:'',cto:'',logLimit:40}
@@ -476,15 +486,17 @@ function beep(c,out,f,t,dur,type,g,atk=.015){
   o.connect(gn).connect(out);o.start(t);o.stop(t+dur+.05);
 }
 const TONES=[
-  ['bowl','Singing bowl (gentle)'],['chime','Wind chime (gentle)'],['marimba','Wooden marimba (gentle)'],['pulse','Soft hum (very gentle)'],
-  ['bell','Bright bell'],['soft','Warm tone'],['digital','Digital beep']
+  ['bowl','Singing bowl','Gentle'],['chime','Wind chime','Gentle'],['marimba','Marimba','Gentle'],['pulse','Soft hum','Gentle'],
+  ['bell','Bright bell','Standard'],['soft','Warm tone','Standard'],['digital','Digital beep','Standard']
 ];
-const VOLUMES=[[.2,'Whisper'],[.4,'Quiet'],[.7,'Medium'],[1,'Loud']];
+const VOLUMES=[[.2,'Whisper'],[.4,'Quiet'],[.7,'Medium'],[1,'Loud'],[1.8,'Extra loud']];
 function sound(kind,force){
   if(!S.settings.sound&&!force)return;
   const c=ac();if(!c)return;
   const t=c.currentTime+.03,tone=S.settings.tone;
-  const out=c.createGain();out.gain.value=S.settings.volume??.4;out.connect(c.destination);
+  const vol=S.settings.volume??.4,out=c.createGain();out.gain.value=vol;
+  if(vol>1){const k=c.createDynamicsCompressor();k.threshold.value=-18;k.ratio.value=8;out.connect(k).connect(c.destination)}  // boost without distortion
+  else out.connect(c.destination);
   if(tone==='bowl'){
     // one or two slow strikes of a low bowl: detuned pair gives the soft shimmer
     const f={focus:196,break:174.6,tracker:220,test:196}[kind];
@@ -508,7 +520,77 @@ function sound(kind,force){
   });
 }
 function buzz(){if(!S.settings.vibrate)return;try{navigator.vibrate&&navigator.vibrate([220,120,220])}catch(e){}}
-function notify(title,body){try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body})}catch(e){}}
+function notify(title,body){
+  if(!S.settings.notify)return;
+  try{if('Notification' in window&&Notification.permission==='granted')new Notification(title,{body,icon:'icon-192.png'})}catch(e){}
+}
+// iPhone: the 'playback' audio session plays even when the ring/silent switch is on silent
+function audioSession(type){try{if(navigator.audioSession)navigator.audioSession.type=type}catch(e){}}
+// End-of-timer alert, repeated until the user taps the screen (or the repeats run out)
+let alertTimers=[];
+function stopAlert(){alertTimers.forEach(clearTimeout);alertTimers=[]}
+function alertEnd(kind){
+  stopAlert();audioSession('playback');
+  sound(kind);buzz();
+  for(let i=1;i<=(S.settings.repeat||0);i++)alertTimers.push(setTimeout(()=>{sound(kind);buzz()},i*9000));
+  alertTimers.push(setTimeout(()=>{if(!S.settings.lockScreen)audioSession('auto')},(S.settings.repeat||0)*9000+7000));
+}
+['pointerdown','keydown'].forEach(ev=>document.addEventListener(ev,()=>{if(alertTimers.length)stopAlert()},{passive:true}));
+
+/* ---------- lock-screen timer ----------
+   Playing a silent, looping audio track makes the phone show a "now playing" card on the lock
+   screen. We fill that card with the timer (title, task, progress bar, play/pause). It also keeps
+   the page running in the background, so end-of-timer sounds play while the phone is locked. */
+let lockAudio=null,lockMetaKey='';
+function silentWavUrl(){
+  const rate=8000,n=rate,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+  const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+}
+function lockSetup(){
+  if(lockAudio)return lockAudio;
+  lockAudio=new Audio(silentWavUrl());lockAudio.loop=true;lockAudio.setAttribute('playsinline','');
+  if('mediaSession' in navigator){
+    const ms=navigator.mediaSession;
+    const h=(act,fn)=>{try{ms.setActionHandler(act,fn)}catch(e){}};
+    h('play',()=>{const a=S.active;if(a&&!a.runStart)toggle(a);else syncLock()});
+    h('pause',()=>{const a=S.active;if(a&&a.runStart)toggle(a);else syncLock()});
+    ['seekto','seekbackward','seekforward','previoustrack','nexttrack'].forEach(x=>h(x,null));
+  }
+  return lockAudio;
+}
+function syncLock(){
+  const a=S.active,on=S.settings.lockScreen&&a;
+  if(!on){
+    if(lockAudio&&!lockAudio.paused)lockAudio.pause();
+    if(lockMetaKey&&'mediaSession' in navigator){try{navigator.mediaSession.metadata=null;navigator.mediaSession.playbackState='none'}catch(e){}}
+    lockMetaKey='';return;
+  }
+  const el=lockSetup();
+  if(a.runStart&&el.paused)el.play().catch(()=>{});
+  if(!a.runStart&&!el.paused)el.pause();
+  if(!('mediaSession' in navigator))return;
+  const ms=navigator.mediaSession,e=elapsed(a);
+  const label=a.mode==='tracker'?'Time Tracker':a.mode==='break'?(a.kind==='long'?'Long break':'Short break'):'Focus';
+  let sub;
+  if(a.mode==='tracker')sub=`Since ${fmtTime(a.startedAt)} · ${fmtDur(e/1000)} so far`;
+  else{const left=Math.max(0,Math.ceil((a.target-e)/MIN));sub=`${left} min left${a.mode==='break'?'':' · ends '+fmtTime(Date.now()+(a.target-e)/MIN*60000)}`}
+  const title=`${label}${a.task?' · '+a.task.name:''}`;
+  const key=title+sub+(a.runStart?1:0);
+  if(key!==lockMetaKey){
+    lockMetaKey=key;
+    try{ms.metadata=new MediaMetadata({title,artist:sub,album:'Dryspace Focus Flow',artwork:[{src:'icon-512.png',sizes:'512x512',type:'image/png'},{src:'icon-192.png',sizes:'192x192',type:'image/png'}]})}catch(err){}
+    try{ms.playbackState=a.runStart?'playing':'paused'}catch(err){}
+    try{
+      // progress bar: countdown uses the session length, tracker fills to the next whole hour
+      const sec=e/1000*(a.mode==='tracker'?1:60000/MIN);
+      const dur=a.mode==='tracker'?Math.ceil((sec+1)/3600)*3600:a.target/MIN*60;
+      ms.setPositionState({duration:dur,position:Math.min(sec,dur),playbackRate:a.runStart?1:0});
+    }catch(err){}
+  }
+}
 let wl=null;
 async function wake(){try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}}catch(e){}}
 function releaseWake(){try{wl&&wl.release()}catch(e){}wl=null}
@@ -571,12 +653,12 @@ function completeFocus(){
   S.msg={title:long?`${c.n} sessions done. Take ${bmin} minutes.`:`Session ${c.n} complete`,
          text:fill(pick(FOCUS_MSG),{min:a.min,task:a.task.name,n:c.n,today:fmtDur(todayFocus)})};
   S.ui.mode='focus';S.ui.view='timer';
-  save();sound('focus');buzz();notify('Focus session complete',S.msg.text);render();
+  save();alertEnd('focus');notify('Focus session complete',S.msg.text);render();
   if(!S.settings.autoBreak)releaseWake();
 }
 function completeBreak(){
   S.active=null;S.msg=null;save();
-  sound('break');buzz();
+  alertEnd('break');
   const text=fill(pick(BREAK_MSG),{next:cycleToday().n+1});
   notify('Break over',text);releaseWake();render();toast(text,'Break over');
 }
@@ -694,7 +776,7 @@ function openDrawer(){
     const on=S.ui.view===v&&(!m||S.ui.mode===m);
     return `<button class="${on?'on':''}" onclick="closeSheet();go('${v}'${m?`,'${m}'`:''})">${icon}${label}</button>`;
   };
-  openSheet(`<div class="brand" style="padding:4px 12px 10px">Focus<i>Flow</i></div>
+  openSheet(`<div class="brand" style="padding:4px 12px 14px"><small>Dryspace</small><span>Focus<i>Flow</i></span></div>
   <div class="navlist">
     ${it('timer','focus','Focus timer','<span class="sw" style="background:#3EE0FF"></span>')}
     ${it('timer','tracker','Time Tracker','<span class="sw" style="background:#E36C2C"></span>')}
@@ -782,7 +864,7 @@ function vTimer(){
   if(vm==='focus'&&isBreak){
     ctl=`<div class="ctlwrap"><button class="ctl" onclick="skipBreak()" aria-label="Skip break">${ICON.skip}</button>Skip</div>${pp}<div class="ctlwrap"><button class="ctl" onclick="addMinute()" aria-label="Add one minute">${ICON.plus}</button>+1 min</div>`;
   }else if(vm==='focus'){
-    ctl=`<div class="ctlwrap"><button class="ctl" onclick="resetFocus()" aria-label="Reset" ${mine?'':'disabled'}>${ICON.reset}</button>Reset</div>${pp}<div class="ctlwrap"><button class="ctl" onclick="toggleSound()" aria-label="Toggle sound">${S.settings.sound?ICON.vol:ICON.mute}</button>${S.settings.sound?'Sound on':'Muted'}</div>`;
+    ctl=`<div class="ctlwrap"><button class="ctl" onclick="resetFocus()" aria-label="Reset" ${mine?'':'disabled'}>${ICON.reset}</button>Reset</div>${pp}<div class="ctlwrap"><button class="ctl" onclick="soundTap()" onpointerdown="lpStart()" onpointerup="lpEnd()" onpointerleave="lpEnd()" onpointercancel="lpEnd()" oncontextmenu="event.preventDefault()" style="-webkit-touch-callout:none;user-select:none" aria-label="Sound on or off. Hold for sound settings.">${S.settings.sound?ICON.vol:ICON.mute}</button>${S.settings.sound?'Sound on':'Muted'}<small style="font-size:10px;opacity:.7;margin-top:-4px">Hold for options</small></div>`;
   }else{
     ctl=`<div class="ctlwrap"><button class="ctl" onclick="pickFor('tracker')" aria-label="Switch task">${ICON.swap}</button>Switch</div>${pp}<div class="ctlwrap"><button class="ctl" onclick="stopTracker()" aria-label="Stop and save" ${mine?'':'disabled'}>${ICON.stop}</button>Stop &amp; save</div>`;
   }
@@ -808,7 +890,7 @@ function paintTimer(){
   if(a){
     const title=a.mode==='tracker'?fmtClock(elapsed(a),true,true):fmtClock(a.target-elapsed(a));
     document.title=`${title} · ${a.mode==='break'?'Break':a.mode==='tracker'?'Tracking':'Focus'}`;
-  }else document.title='FocusFlow';
+  }else document.title='Dryspace Focus Flow';
   if(!d||S.ui.view!=='timer')return;
   const vm=S.ui.mode;let prog,txt;
   if(vm==='focus'){
@@ -890,7 +972,7 @@ function vDash(){
   const rb=`<div class="rangebar">${[['today','Today'],['week','Week'],['month','Month'],['custom','Custom']].map(([k,l])=>`<button class="${S.ui.range===k?'on':''}" onclick="setRange('${k}')">${l}</button>`).join('')}</div>`;
   const custom=S.ui.range==='custom'?`<div class="grid2"><label class="field">From<input type="date" id="cfrom" value="${S.ui.cfrom}" onchange="setCustom()"></label><label class="field">To<input type="date" id="cto" value="${S.ui.cto}" onchange="setCustom()"></label></div>`:'';
 
-  const totalSec=`<section class="total"><p class="eyebrow">${esc(label)}</p>
+  const totalSec=`<section class="total"><p class="eyebrow">${S.settings.userName?esc(S.settings.userName)+' · ':''}${esc(label)}</p>
     <div class="big">${h}<small>h</small>${m}<small>m</small></div>
     <div class="splitbar" aria-hidden="true"><span style="width:${tot?fs/tot*100:0}%;background:var(--m-focus)"></span><span style="width:${tot?ts/tot*100:0}%;background:var(--m-tracker)"></span></div>
     <div class="splitlegend"><span><i style="background:var(--m-focus)"></i>Focus ${fmtDur(fs)}</span><span><i style="background:var(--m-tracker)"></i>Time Tracker ${fmtDur(ts)}</span></div></section>`;
@@ -1054,28 +1136,60 @@ function delDraft(){
 }
 
 /* ---------- settings & data ---------- */
+function swRow(id,on){return `<label class="switch"><input type="checkbox" id="${id}" ${on?'checked':''} onchange="S.settings.${id}=this.checked;save()"><i></i></label>`}
+// Sound controls, shared by the Settings page and the long-press sheet on the sound button
+function soundRows(sfx=''){
+  const s=S.settings;
+  let perm='not supported in this browser';try{if('Notification' in window)perm=Notification.permission==='granted'?'allowed':Notification.permission==='denied'?'blocked in browser settings':'not yet allowed'}catch(e){}
+  return `<div class="setrow"><span>Sound when a timer ends</span><label class="switch"><input type="checkbox" id="sound${sfx}" ${s.sound?'checked':''} onchange="S.settings.sound=this.checked;save();paintSoundBtn()"><i></i></label></div>
+    <div class="setrow"><span>Tone</span><select id="tone${sfx}" style="max-width:62%" onchange="S.settings.tone=this.value;save();sound('test',true)">${['Gentle','Standard'].map(g=>`<optgroup label="${g}">${TONES.filter(t=>t[2]===g).map(([k,l])=>`<option value="${k}" ${s.tone===k?'selected':''}>${l}</option>`).join('')}</optgroup>`).join('')}</select></div>
+    <div class="setrow"><span>Volume</span><div style="display:flex;gap:8px"><select id="volume${sfx}" onchange="S.settings.volume=+this.value;save();sound('test',true)">${VOLUMES.map(([v,l])=>`<option value="${v}" ${(s.volume??.4)===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn ghost sm" onclick="sound('test',true)">Test</button></div></div>
+    <div class="setrow"><span>Repeat the alert<small class="muted" style="display:block;font-weight:500">Every 9 seconds until you tap the screen</small></span><select id="repeat${sfx}" onchange="S.settings.repeat=+this.value;save()">${[[0,'No repeat'],[1,'1 repeat'],[2,'2 repeats'],[4,'4 repeats']].map(([v,l])=>`<option value="${v}" ${s.repeat===v?'selected':''}>${l}</option>`).join('')}</select></div>
+    <div class="setrow"><span>Vibrate (Android)</span><label class="switch"><input type="checkbox" id="vibrate${sfx}" ${s.vibrate?'checked':''} onchange="S.settings.vibrate=this.checked;save()"><i></i></label></div>
+    <div class="setrow"><span>Pop-up notifications<small class="muted" style="display:block;font-weight:500">Phone permission: ${perm}</small></span><label class="switch"><input type="checkbox" id="notify${sfx}" ${s.notify?'checked':''} onchange="setNotify(this)"><i></i></label></div>
+    <div class="setrow"><span>Timer on lock screen<small class="muted" style="display:block;font-weight:500">Shows the countdown on your lock screen and keeps alerts playing while the phone is locked. Pauses any music while a timer runs.</small></span><label class="switch"><input type="checkbox" id="lockScreen${sfx}" ${s.lockScreen?'checked':''} onchange="S.settings.lockScreen=this.checked;save();syncLock()"><i></i></label></div>`;
+}
+function setNotify(inp){
+  if(!inp.checked){S.settings.notify=false;save();toast('Pop-up notifications off.');return}
+  const fail=msg=>{inp.checked=false;S.settings.notify=false;save();toast(msg)};
+  try{
+    if(!('Notification' in window))return fail('This browser does not support notifications. On iPhone, open the app from its home-screen icon.');
+    Notification.requestPermission().then(p=>{
+      if(p==='granted'){S.settings.notify=true;save();toast('Pop-up notifications on.')}
+      else fail('Notifications are blocked for this site in your browser settings. Sound and vibration still work.');
+    }).catch(()=>fail('Notifications are blocked here. Sound and vibration still work.'));
+  }catch(e){fail('Notifications are blocked here. Sound and vibration still work.')}
+}
+function openSoundSheet(){
+  openSheet(`<p class="eyebrow">Sound &amp; alerts</p><h3>How timers get your attention</h3>${soundRows('Q')}
+  <div class="actions"><button class="btn ghost" onclick="closeSheet();render()">Done</button></div>`);
+}
+function paintSoundBtn(){if(S.ui.view==='timer')render()}
+// long-press on the sound button opens the sound sheet; a normal tap mutes/unmutes
+let lpT=null,lpFired=false;
+function lpStart(){lpFired=false;clearTimeout(lpT);lpT=setTimeout(()=>{lpFired=true;try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}openSoundSheet()},550)}
+function lpEnd(){clearTimeout(lpT)}
+function soundTap(){if(lpFired){lpFired=false;return}toggleSound()}
+
 function vSettings(){
   const s=S.settings;
   const sel=(id,vals,cur,fmt)=>`<select id="${id}" onchange="S.settings.${id}=+this.value;save();render()">${vals.map(v=>`<option value="${v}" ${v===cur?'selected':''}>${fmt(v)}</option>`).join('')}</select>`;
-  const sw=(id,on)=>`<label class="switch"><input type="checkbox" id="${id}" ${on?'checked':''} onchange="S.settings.${id}=this.checked;save()"><i></i></label>`;
   const real=S.entries.filter(e=>!e.sample).length;
-  let perm='Not available here';try{if('Notification' in window)perm=Notification.permission==='granted'?'On':Notification.permission==='denied'?'Blocked':'Off'}catch(e){}
   return `<h3 style="font-size:28px">Settings</h3>
+  <section class="card"><h4>You</h4>
+    <label class="field">Your name<input type="text" id="userName" maxlength="40" autocomplete="name" placeholder="e.g. Jamie" value="${esc(s.userName)}" oninput="S.settings.userName=this.value.trim();save()"></label>
+    <p class="muted" style="font-size:13px">Shown on the Dashboard and added to every row of your CSV export, so reports say whose time it is.</p>
+  </section>
   <section class="card"><h4>Timers</h4>
     <div class="setrow"><span>Default focus length</span>${sel('focusMin',[5,10,15,20,25,30,35,40,45,50,55,60],s.focusMin,v=>v+' min')}</div>
     <div class="setrow"><span>Short break</span>${sel('shortMin',[3,5,10],s.shortMin,v=>v+' min')}</div>
     <div class="setrow"><span>Long break</span>${sel('longMin',[10,15,20,30],s.longMin,v=>v+' min')}</div>
     <div class="setrow"><span>Long break after</span>${sel('longEvery',[2,3,4,5,6],s.longEvery,v=>v+' sessions')}</div>
-    <div class="setrow"><span>Start breaks automatically</span>${sw('autoBreak',s.autoBreak)}</div>
+    <div class="setrow"><span>Start breaks automatically</span>${swRow('autoBreak',s.autoBreak)}</div>
   </section>
   <section class="card"><h4>Sound &amp; alerts</h4>
-    <div class="setrow"><span>Sound when a timer ends</span><label class="switch"><input type="checkbox" id="sound" ${s.sound?'checked':''} onchange="S.settings.sound=this.checked;save()"><i></i></label></div>
-    <div class="setrow"><span>Tone</span><select id="tone" style="max-width:62%" onchange="S.settings.tone=this.value;save();sound('test',true)">${TONES.map(([k,l])=>`<option value="${k}" ${s.tone===k?'selected':''}>${l}</option>`).join('')}</select></div>
-    <div class="setrow"><span>Volume</span><div style="display:flex;gap:8px"><select id="volume" onchange="S.settings.volume=+this.value;save();sound('test',true)">${VOLUMES.map(([v,l])=>`<option value="${v}" ${(s.volume??.4)===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn ghost sm" onclick="sound('test',true)">Test</button></div></div>
-    <p class="muted" style="font-size:13px">Tip: Test plays the end-of-focus sound. Pick a tone and volume that you notice without it making you jump.</p>
-    <div class="setrow"><span>Vibrate (Android)</span>${sw('vibrate',s.vibrate)}</div>
-    <div class="setrow"><span>Pop-up notifications <small class="muted" style="display:block;font-weight:500">${perm}</small></span><button class="btn ghost sm" onclick="askNotify()">Turn on</button></div>
-    <p class="muted" style="font-size:13px">Phones can silence web pages when the screen locks. The timer keeps correct time and catches up when you return. While a timer runs, the app asks your phone to keep the screen awake.</p>
+    ${soundRows()}
+    <p class="muted" style="font-size:13px">Web apps can't raise your phone's own volume. Alerts play at your phone's media volume, so keep that turned up. Extra loud and repeats help if it's still too faint. Tip: hold the sound button on the Focus screen to open these settings.</p>
   </section>
   <section class="card"><h4>Ad-hoc tasks</h4>
     ${S.adhoc.length?S.adhoc.map((n,i)=>`<div class="adhocrow"><span>${esc(n)}</span><button onclick="S.adhoc.splice(${i},1);save();render()">Remove</button></div>`).join(''):'<p class="muted" style="font-size:14px">Tasks you type under Other in the task picker are saved here.</p>'}
@@ -1086,12 +1200,7 @@ function vSettings(){
     ${S.hasSample?'<button class="btn ghost" onclick="clearSample()">Clear sample data</button>':''}
     <button class="btn danger" id="eraseBtn" onclick="eraseAll(this)">Erase everything</button>
   </section>
-  <p class="muted" style="font-size:12px;text-align:center">FocusFlow · Focus counts down, Time Tracker counts up, the Dashboard adds them together.</p>`;
-}
-function askNotify(){
-  try{if(!('Notification' in window)){toast('Notifications are not available in this browser.');return}
-    Notification.requestPermission().then(p=>{toast(p==='granted'?'Notifications on.':'Notifications are blocked here. Sound and vibration still work.');render()}).catch(()=>toast('Notifications are blocked here. Sound and vibration still work.'))}
-  catch(e){toast('Notifications are blocked here. Sound and vibration still work.')}
+  <p class="muted" style="font-size:12px;text-align:center">Dryspace Focus Flow · Focus counts down, Time Tracker counts up, the Dashboard adds them together.</p>`;
 }
 let eraseArm=0;
 function eraseAll(btn){
@@ -1100,8 +1209,8 @@ function eraseAll(btn){
 }
 function csvCell(v){v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
 function exportRows(){
-  const head=['id','date','start','end','mode','category','task','minutes','completed','manual','note'];
-  const rows=S.entries.filter(e=>!e.sample).sort((a,b)=>a.start-b.start).map(e=>[e.id,dayKey(e.start),hhmm(e.start),hhmm(e.end),e.mode,e.cat,e.task,(e.sec/60).toFixed(1),e.completed?'yes':'no',e.manual?'yes':'no',e.note||'']);
+  const head=['id','user','date','start','end','mode','category','task','minutes','completed','manual','note'];
+  const rows=S.entries.filter(e=>!e.sample).sort((a,b)=>a.start-b.start).map(e=>[e.id,S.settings.userName||'',dayKey(e.start),hhmm(e.start),hhmm(e.end),e.mode,e.cat,e.task,(e.sec/60).toFixed(1),e.completed?'yes':'no',e.manual?'yes':'no',e.note||'']);
   return[head,...rows];
 }
 function exportSheet(){
@@ -1159,17 +1268,23 @@ function render(){
   const vm=S.ui.mode,a=S.active;
   const theme=vm==='tracker'?'tracker':(a&&a.mode==='break'?'break':'focus');
   document.body.dataset.theme=theme;
-  const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=theme==='tracker'?'#C2521B':theme==='break'?'#23367A':'#0B1026';
+  const tc=document.querySelector('meta[name=theme-color]');if(tc)tc.content=theme==='tracker'?'#D8622A':theme==='break'?'#314C98':'#0F1839';
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.ui.view));
   const views={timer:vTimer,dash:vDash,stats:vStats,log:vLog,settings:vSettings};
   $('#main').innerHTML=(views[S.ui.view]||vTimer)();
-  paintTimer();paintPill();
+  paintTimer();paintPill();syncLock();
 }
 function tick(){
   const a=S.active;
   if(a&&a.runStart&&a.target&&elapsed(a)>=a.target){a.mode==='focus'?completeFocus():completeBreak();return}
-  paintTimer();paintPill();
+  paintTimer();paintPill();syncLock();
 }
+// Called by the service worker loader (index.html) when a new version has been downloaded
+window.ffUpdateReady=()=>{
+  const b=$('#update');if(!b)return;
+  b.hidden=false;
+  b.innerHTML=`<span>A new version of the app is ready.</span><button onclick="location.reload()">Update now</button>`;
+};
 setInterval(tick,250);
 addEventListener('scroll',()=>{const h=$('header.top');if(h)h.classList.toggle('scrolled',scrollY>4)},{passive:true});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){tick();if(S.active&&S.active.runStart)wake()}});
@@ -1177,7 +1292,14 @@ render();
 </script>
 
 <script>
-if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator){
+  // Check for a new version on launch and whenever the app comes back to the foreground.
+  let hadController=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadController&&window.ffUpdateReady)window.ffUpdateReady();hadController=true});
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})});
+  }).catch(()=>{}));
+}
 </script>
 </body>
 </html>

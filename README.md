@@ -1,4 +1,4 @@
-# FocusFlow
+# Dryspace Focus Flow
 
 A focus timer (counts down) and a time tracker (counts up) that share one task menu. A dashboard adds the two together.
 

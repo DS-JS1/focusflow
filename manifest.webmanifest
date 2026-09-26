@@ -1,6 +1,6 @@
 {
-  "name": "FocusFlow",
-  "short_name": "FocusFlow",
+  "name": "Dryspace Focus Flow",
+  "short_name": "Focus Flow",
   "description": "Focus timer and time tracker with a combined dashboard.",
   "start_url": "./",
   "scope": "./",
